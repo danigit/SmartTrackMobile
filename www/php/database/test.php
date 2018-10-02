@@ -18,7 +18,11 @@ class test{
 
 
     function test_functions($result){
-        var_dump($result);
+        if( $result instanceof database_errors)
+            var_dump($result->get_error_name());
+        else {
+            var_dump($result);
+        }
     }
 }
 

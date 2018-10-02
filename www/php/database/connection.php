@@ -6,6 +6,8 @@
  * Time: 23.57
  */
 
+require_once 'database_errors.php';
+
 /**
  * Classe che crea la connessione al database ed esegue le query richieste dalle chiamate ajax
  */
@@ -17,7 +19,8 @@ class connection{
         $this->connection = new mysqli(self::PATH, self::USERNAME, self::PASSWORD, self::DATABASE);
 
         if($this->connection->set_charset('utf4')){
-            print_r('Impossibile settare utf8: %\m', $this->connection->error);
+            $error = new database_errors(database_errors::$ERROR_ON_SETTING_UTF);
+            print_r($error->get_error_name() . ' - ' . $this->connection->error);
         }
 
         $this->test = $test;
@@ -31,6 +34,9 @@ class connection{
         $testQuery = 'SELECT * FROM object';
 
         $result = $this->connection->query($testQuery);
+
+        if ($result === false)
+            return new database_errors(database_errors::$ERROR_ON_TESTING);
 
         $result_array = array();
 
