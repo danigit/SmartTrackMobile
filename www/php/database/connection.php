@@ -6,7 +6,7 @@
  * Time: 23.57
  */
 
-class Connection
+class connection
 {
 
 }

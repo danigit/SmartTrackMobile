@@ -6,9 +6,12 @@
  * Time: 23.47
  */
 
-require_once '../database/Connection.php';
+require_once '../database/connection.php';
 
-
+/**
+ * Classe che si occupa con la gestione della connessione al database e la gestione dello scambio di messaggi tra il
+ * client e il server
+ */
 abstract class client_server_interaction{
 
     private $connection;
@@ -25,16 +28,28 @@ abstract class client_server_interaction{
         ob_start();
     }
 
+    /**
+     * Funzione che crea la connessione al database
+     */
     protected function get_connection(){
         if(!isset($this->connection))
-            $this->connection = new Connection();
+            $this->connection = new connection();
     }
 
+    /**
+     * Funzione che chiama le funzioni che gestiscono lo scambio di messaggi
+     */
     function execute(){
         $this->elaborate_input();
         $this->get_db_informations();
+        $this->json_success();
     }
 
+    /**
+     * Funzione che rimuove i caratteri speciali html dai dati passati come parametro
+     * @param $result - i dati da sanitizzare
+     * @return array|string - un array oppure una stringa dalla quale sono stati rimossi i carratteri speciali html
+     */
     private static function escape_array($result){
         if (is_numeric($result) || is_bool($result))
             return $result;
@@ -49,6 +64,10 @@ abstract class client_server_interaction{
         return $result;
     }
 
+    /**
+     * Funzione che ritorna il risultato json al client
+     * @param $result - i dati da ritornare al client
+     */
     function json_result($result){
         $buffer = ob_get_contents();
         ob_end_clean();
@@ -61,12 +80,20 @@ abstract class client_server_interaction{
         die();
     }
 
+    /**
+     * Funzione che viene chiamata se la chiamata del client ha avuto successo
+     */
     function json_success(){
         $result = $this->get_returne_data();
         $result['result'] = true;
         $this->json_result($result);
     }
 
+    /**
+     * Funzione che viene chiamata se la chiamata del client ha generato un errore
+     * @param $message - il messaggio di errore da ritornare
+     * @param int $code - il codice dell'errore
+     */
     function json_error($message, $code = 0){
         $result = array();
         $result['result'] = false;
