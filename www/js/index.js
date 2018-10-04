@@ -26,8 +26,8 @@ let app = {
     },
 
     onDeviceReady: function() {
-
-       kits.getKits();
+        //chiamo la funzione ripetitivamento dopo ogni secondo
+        setInterval('kits.getKits()', 1000);
     },
 };
 
@@ -104,7 +104,22 @@ let kits = {
           type: "GET",
           url: "http://danielfotografo.altervista.org/smartTrack/php/ajax/get_all_kits.php",
         }).done(function (data) {
-            //TODO inserire i kit nella tabella
+
+            let jsonObject = JSON.parse(data);
+            $('#passing-kit-body').empty();
+            let tableRow;
+
+            //aggiorno la tabella con i nuovi kit ricevuti
+            $.each(jsonObject[0], function (key, value) {
+                tableRow = $('<tr></tr>');
+
+                $.each(value, function (innerKey, innerValue) {
+                    if(innerKey === 'kit_id' || innerKey === 'description' || innerKey === 'creation_date') {
+                        tableRow.append('<td class="font-x-large">' + innerValue + '</td>');
+                    }
+                });
+                $('#passing-kit-body').append(tableRow).trigger('create');
+            })
         }).fail(function (a, b, c) {
             //TODO mostrare messaggio di errore
         });
