@@ -1,0 +1,23 @@
+.kit-name-label{
+    font-size: x-large;
+    text-align: center;
+    background-color: #6AB8C1!important;
+    padding: 31px!important;
+}
+
+.kit-name-label p{
+    margin: 0;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.table-container{
+    margin: 30px auto 30px auto;
+    padding: 0 10px;
+}
+
+thead tr{
+    /*background-color: #FFBC58!important;*/
+    background: url("../img/table-header.jpg") bottom !important;
+    color: #FFFFFF;
+}

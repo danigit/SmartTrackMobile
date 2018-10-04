@@ -18,7 +18,7 @@ abstract class client_server_interaction{
 
     abstract protected function elaborate_input();
     abstract protected function get_db_informations();
-    abstract protected function get_returne_data();
+    abstract protected function get_returned_data();
 
     function __construct(){
         if (!isset($_SESSION))
@@ -34,6 +34,8 @@ abstract class client_server_interaction{
     protected function get_connection(){
         if(!isset($this->connection))
             $this->connection = new connection();
+
+        return $this->connection;
     }
 
     /**
@@ -69,12 +71,12 @@ abstract class client_server_interaction{
      * @param $result - i dati da ritornare al client
      */
     function json_result($result){
-        $buffer = ob_get_contents();
+        $res = ob_get_contents();
         ob_end_clean();
 
-        $result['server_errors'] = $buffer;
+        $result['server_errors'] = $res;
 
-        $result = self::escape_array($result);
+        $result = $this->escape_array($result);
 
         echo json_encode($result);
         die();
@@ -84,7 +86,7 @@ abstract class client_server_interaction{
      * Funzione che viene chiamata se la chiamata del client ha avuto successo
      */
     function json_success(){
-        $result = $this->get_returne_data();
+        $result = $this->get_returned_data();
         $result['result'] = true;
         $this->json_result($result);
     }

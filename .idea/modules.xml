@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SmartTrackMobile.iml" filepath="$PROJECT_DIR$/SmartTrackMobile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/SmartTrackMobile.iml" filepath="$PROJECT_DIR$/.idea/SmartTrackMobile.iml" />
     </modules>
   </component>
 </project>

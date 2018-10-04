@@ -13,6 +13,7 @@ class database_errors{
 
     public static $ERROR_ON_TESTING    = 0;
     public static $ERROR_ON_SETTING_UTF    = 1;
+    public static $ERROR_ON_GETTING_KIT    = 2;
 
     private $error;
 
@@ -28,6 +29,7 @@ class database_errors{
         switch ($this->error){
             case 0: return 'ERROR_ON_TESTING';
             case 1: return 'ERROR_ON_SETTING_UTF';
+            case 2: return 'ERROR_ON_GETTING_KIT';
             default : return null;
         }
     }

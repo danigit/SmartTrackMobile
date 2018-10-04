@@ -16,31 +16,38 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var app = {
+// import * as cordova from "../../plugins/cordova-plugin-file/www/fileSystemPaths";
+
+
+let app = {
     // Application Constructor
     initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
     },
 
-    // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
     onDeviceReady: function() {
-        this.receivedEvent('deviceready');
+
+       kits.getKits();
     },
-
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
-    }
 };
 
-app.initialize();
+
+let kits = {
+  getKits: function () {
+      $.ajax({
+          type: "GET",
+          url: "http://danielfotografo.altervista.org/smartTrack/php/ajax/get_all_kits.php",
+      }).done(function (data) {
+          console.log(data);
+          alert('kit getted ');
+          alert(data);
+      }).fail(function (a, b, c) {
+          console.log('fail: ' + b + '|' + c );
+          alert('fail');
+      });
+  }
+};
+
+$(document).ready( function () {
+    app.initialize();
+});

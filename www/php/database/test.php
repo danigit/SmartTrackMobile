@@ -13,7 +13,7 @@ class test{
 
     function __construct(){
         $this->connection = new connection(true);
-        self::test_functions($this->connection->test());
+        self::test_functions($this->connection->get_all_kits());
     }
 
 

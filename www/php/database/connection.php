@@ -46,4 +46,28 @@ class connection{
 
         return $result_array;
     }
+
+    /**
+     * Funzione che recupera tutti i kit
+     * @return array|database_errors - l'array contenente i kit oppure un errore
+     */
+    function get_all_kits(){
+        $query = "SELECT kit_id, description, creation_date, closing_date FROM kit";
+
+        $result = $this->connection->query($query);
+
+        if ($result === false )
+            return new database_errors(database_errors::$ERROR_ON_GETTING_KIT);
+
+        $result_array = array();
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $result_array[] = array('kit_id' => $row['kit_id'], "description" => $row['description'],
+                "creation_date" => date('d/m/Y H:i:s', strtotime($row['creation_date'])), "closing_date" => $row['closing_date']);
+        }
+
+        $result->close();
+
+        return $result_array;
+    }
 }
