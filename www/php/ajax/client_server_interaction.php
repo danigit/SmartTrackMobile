@@ -104,4 +104,16 @@ abstract class client_server_interaction{
 
         $this->json_result($result);
     }
+
+    /**
+     * Funzione che applica trim ad una variabile ricevuta attraverso post
+     * @param $name - il nome della variabile
+     * @return bool|string - il valore restituito da trim oppure false altrimenti
+     */
+    function validate_string($name){
+        if (isset($_POST[$name]))
+            return trim($_POST[$name]);
+
+        return false;
+    }
 }

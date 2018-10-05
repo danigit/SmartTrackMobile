@@ -27,7 +27,7 @@ let app = {
 
     onDeviceReady: function() {
         //chiamo la funzione ripetitivamento dopo ogni secondo
-        setInterval('kits.getKits()', 1000);
+        setInterval('kits.getAnchorKits("B827EB45389B")', 1000);
     },
 };
 
@@ -99,12 +99,12 @@ let kits = {
     /**
      * Funzione che recupera tutti i kit attivi
      */
-    getKits: function () {
+    getAnchorKits: function (anch) {
         $.ajax({
-          type: "GET",
-          url: "http://danielfotografo.altervista.org/smartTrack/php/ajax/get_all_kits.php",
+            type: "POST",
+            data: {anchor: anch},
+            url: "http://danielfotografo.altervista.org/smartTrack/php/ajax/get_anchor_kits.php",
         }).done(function (data) {
-
             let jsonObject = JSON.parse(data);
             $('#passing-kit-body').empty();
             let tableRow;
@@ -126,6 +126,7 @@ let kits = {
     }
 };
 
+// kits.getAnchorKits('B827EB45389B');
 
 $(document).ready( function () {
     app.initialize();

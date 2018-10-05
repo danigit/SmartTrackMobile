@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="smartTrack@localhost" uuid="b5216111-41b6-40b2-a3da-830b96f05347">
+    <data-source source="LOCAL" name="smartTrack@localhost" uuid="496eeacd-1cb8-466c-8476-5aaa53c7c29f">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
