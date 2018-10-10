@@ -27,7 +27,7 @@ let app = {
 
     onDeviceReady: function() {
         //chiamo la funzione ripetitivamento dopo ogni secondo
-        setInterval('kits.getAnchorKits("B827EB45389B")', 1000);
+        setInterval('kits.getEnvironmentKits(1)', 1000);
     },
 };
 
@@ -94,36 +94,60 @@ let storage = {
     },
 };
 
+
 let kits = {
 
     /**
-     * Funzione che recupera tutti i kit attivi
+     * Funzione che recupera tutti i kit nell'ambiente tassato come parametro
      */
-    getAnchorKits: function (anch) {
+    getEnvironmentKits: function (env) {
+
+
         $.ajax({
-            type: "POST",
-            data: {anchor: anch},
-            url: "http://danielfotografo.altervista.org/smartTrack/php/ajax/get_anchor_kits.php",
+            type: 'POST',
+            data: {environment: env},
+            url: 'http://danielfotografo.altervista.org/smartTrack/php/ajax/get_environment_kits.php'
         }).done(function (data) {
-            let jsonObject = JSON.parse(data);
-            $('#passing-kit-body').empty();
-            let tableRow;
+            let list = '';
+            let isPresent = false;
+            let envKitUl = $('.env-kit-ul');
+            let jsonStatus = JSON.parse(data);
 
-            //aggiorno la tabella con i nuovi kit ricevuti
-            $.each(jsonObject[0], function (key, value) {
-                tableRow = $('<tr></tr>');
+            //ripristino lo stato degli kit a completti
+            $.each(envKitUl.children(), function (k, v) {
+                $(v).removeClass('incomplete-kit');
+                $(v).addClass('complete-kit');
+            });
 
-                $.each(value, function (innerKey, innerValue) {
-                    if(innerKey === 'kit_id' || innerKey === 'description' || innerKey === 'creation_date') {
-                        tableRow.append('<td class="font-x-large">' + innerValue + '</td>');
-                    }
+            $.each(jsonStatus[0], function (key, value) {
+
+                //controllo se il kit e' gia' presente nella lista
+                $.each(envKitUl.children(), function (k, v) {
+                    if($(v).attr('id') == value['kit_id'])
+                        isPresent = true;
                 });
-                $('#passing-kit-body').append(tableRow).trigger('create');
-            })
-        }).fail(function (a, b, c) {
-            //TODO mostrare messaggio di errore
+
+                //se non e' presente lo inserisco
+                if(!isPresent) {
+                    list = '<li id="' + value['kit_id'] + '" class="complete-kit"><a href="#">' + value['kit_id'] + '</a></li>';
+                    envKitUl.append(list);
+                }
+
+                isPresent = false;
+
+                //se il kit e' incompletto lo marco come incompleto
+                if(value['tag_mac'] === ""){
+                    $('#' + value['kit_id']).removeClass('complete-kit');
+                    $('#' + value['kit_id']).addClass('incomplete-kit');
+                }
+            });
+
+            envKitUl.listview();
+            envKitUl.listview('refresh');
+        }).fail(function (error) {
+            alert('fail');
         });
-    }
+    },
 };
 
 // kits.getAnchorKits('B827EB45389B');

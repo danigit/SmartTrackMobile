@@ -13,7 +13,7 @@ class test{
 
     function __construct(){
         $this->connection = new connection(true);
-        self::test_functions($this->connection->get_anchor_kits('B827EB45389B'));
+        self::test_functions($this->connection->get_environment_kits(1));
     }
 
 

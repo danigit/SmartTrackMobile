@@ -21,3 +21,67 @@ thead tr{
     background: url("../img/table-header.jpg") bottom !important;
     color: #FFFFFF;
 }
+
+.font-small{
+    font-size: small!important;
+}
+
+.no-margin{
+    margin: 0!important;
+}
+
+.green-background{
+    background-color: #3dc235!important;
+}
+
+.red-background{
+    background-color: #CF3D44!important;
+}
+
+.padding-10{
+    padding: 10px!important;
+}
+
+.padding-5{
+    padding: 5px!important;
+}
+
+.white-color{
+    color: #FFFFFF!important;
+}
+
+.border-radius-10{
+    border-radius: 10px!important;
+}
+
+/*env kit*/
+
+.env-kit-ul{
+    width: 99%;
+    margin: 50px auto auto!important;
+}
+
+.env-kit-ul li {
+    margin-bottom: 10px!important;
+}
+
+.complete-kit{
+    border: 2px solid #3dc235;
+    border-radius: 10px!important;
+}
+
+.complete-kit a{
+    text-align: center!important;
+    font-size: large!important;
+}
+
+.incomplete-kit{
+    border: 2px solid #CF3D44;
+    border-radius: 10px!important;
+}
+
+.incomplete-kit a{
+    text-align: center!important;
+    font-size: large!important;
+}
+/*end env kit*/
