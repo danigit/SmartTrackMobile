@@ -120,16 +120,29 @@ let kits = {
             });
 
             $.each(jsonStatus[0], function (key, value) {
+                let list = $('<li id="' + value['kit_id'] + '" class="complete-kit"></li>');
 
                 //controllo se il kit e' gia' presente nella lista
                 $.each(envKitUl.children(), function (k, v) {
-                    if($(v).attr('id') == value['kit_id'])
+                    if(parseInt($(v).attr('id')) === value['kit_id'])
                         isPresent = true;
                 });
 
                 //se non e' presente lo inserisco
                 if(!isPresent) {
-                    list = '<li id="' + value['kit_id'] + '" class="complete-kit"><a href="#">' + value['kit_id'] + '</a></li>';
+                    let listButton = $('<a href="#kit-objects" id="' + value['kit_id'] + '">' + value['description'] + '</a>').on('tap', function () {
+                        let id = $(this).attr('id');
+                        $('.kit-objects').empty();
+                        $.each(jsonStatus[0], function (innerKey, innerValue) {
+                            if(innerValue['tag_mac'] === "" && innerValue['kit_id'] === parseInt(id)){
+                                $('.kit-objects').append('<li>' + innerValue['ob_name'] + '</li>');
+                            }
+                        });
+
+                        $('.kit-objects').listview();
+                        $('.kit-objects').listview('refresh');
+                    });
+                    list.append(listButton);
                     envKitUl.append(list);
                 }
 
