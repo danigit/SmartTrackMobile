@@ -54,6 +54,37 @@ thead tr{
     border-radius: 10px!important;
 }
 
+/*main*/
+
+#alert{
+    display: none;
+    position: fixed!important;
+    top: 0!important;
+    left: 0!important;
+    width: 100%!important;
+    height: 100vh!important;
+    background-color: #CF3D44!important;
+}
+
+#alert p{
+    margin: 200px auto auto!important;
+    display: block!important;
+    color: #FFFFFF!important;
+    font-size: 60px!important;
+    text-align: center!important;
+    text-shadow: none!important;
+}
+
+#close-alert{
+    width: 70%!important;
+    margin: 20px auto auto!important;
+    border-radius: 10px!important;
+    font-size: x-large!important;
+}
+
+/*end main*/
+
+
 /*env kit*/
 
 .env-kit-ul{
@@ -65,23 +96,48 @@ thead tr{
     margin-bottom: 10px!important;
 }
 
-.complete-kit{
-    border: 2px solid #3dc235;
-    border-radius: 10px!important;
+.kit-objects{
+    width: 99%;
+    margin: 50px auto auto!important;
+}
+
+.kit-objects li {
+    margin-bottom: 10px!important;
 }
 
 .complete-kit a{
-    text-align: center!important;
-    font-size: large!important;
-}
-
-.incomplete-kit{
-    border: 2px solid #CF3D44;
+    border: 2px solid #3dc235!important;
+    background-color: #3dc235!important;
+    color: #FFFFFF!important;
+    text-shadow: none!important;
     border-radius: 10px!important;
+    text-align: center!important;
+    font-size: x-large!important;
+    font-weight: bold!important;
 }
 
 .incomplete-kit a{
+    border: 2px solid #CF3D44!important;
+    background-color: #CF3D44!important;
+    color: #FFFFFF!important;
+    text-shadow: none!important;
+    border-radius: 10px!important;
     text-align: center!important;
-    font-size: large!important;
+    font-size: x-large!important;
+    font-weight: bold!important;
 }
 /*end env kit*/
+
+
+/*kit objects*/
+.missing-object{
+    border: 2px solid #CF3D44!important;
+    background-color: #CF3D44!important;
+    color: #FFFFFF!important;
+    text-shadow: none!important;
+    border-radius: 10px!important;
+    text-align: center!important;
+    font-size: large;!important;
+    font-weight: bold!important;
+}
+/*end kit objects*/

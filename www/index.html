@@ -49,7 +49,7 @@
 
     <body>
         <div data-role="page">
-            <div data-role="header" id="kit-name" class="kit-name-label">
+            <div data-role="header" id="env-kits" class="kit-name-label">
                 <p>kit aganciati</p>
             </div>
             <div data-role="content">
@@ -60,12 +60,24 @@
                 </div>
             </div>
 
+            <div id="alert">
+                <p>Attenzione kit incompleto</p>
+                <a href="#" id="close-alert" class="ui-btn">Chiudi</a>
+            </div>
         </div>
 
         <div data-role="page" id="kit-objects">
-            <ul class="kit-objects">
+            <div data-role="header" id="kit-objects-label" class="kit-name-label">
+                <p>Oggetti dispersi</p>
+            </div>
 
-            </ul>
+            <div data-role="content">
+                <div class="env-kit-container">
+                    <ul class="kit-objects">
+
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <script type="text/javascript" src="cordova.js"></script>

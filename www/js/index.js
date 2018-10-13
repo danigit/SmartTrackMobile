@@ -18,6 +18,7 @@
  */
 // import * as cordova from "../../plugins/cordova-plugin-file/www/fileSystemPaths";
 
+let isIncomplete = false;
 
 let app = {
     // Application Constructor
@@ -26,9 +27,30 @@ let app = {
     },
 
     onDeviceReady: function() {
+
+        // storage.writeConfiguration('configuration.json', {environment: 1});
+        storage.readConfiguration('configuration.json');
+
         //chiamo la funzione ripetitivamento dopo ogni secondo
-        setInterval('kits.getEnvironmentKits(1)', 1000);
+
     },
+
+    initSync: function (environment) {
+        let json = $.parseJSON(environment);
+        let envId = json.environment;
+
+
+        setInterval(function (){
+            //chiamo la funzione ripetitivamento dopo ogni secondo
+            kits.getEnvironmentKits(envId)
+        }, 1000);
+
+        if($('#alert').length){
+            $('#close-alert').on('click', function () {
+                $('#alert').css('display', 'none')
+            })
+        }
+    }
 };
 
 let storage = {
@@ -37,34 +59,31 @@ let storage = {
      * @param fileToCreate - nome del file
      * @param fileContent - il contenuto del file
      */
-    writeToExternalRootDirectory: function(fileToCreate, fileContent){
+    writeConfiguration: function(fileToCreate, fileContent){
         let fileName = fileToCreate;
         let data = fileContent;
 
         window.resolveLocalFileSystemURL( cordova.file.externalRootDirectory, function( directoryEntry ) {
             directoryEntry.getFile(fileName, { create: true }, function( fileEntry ) {
-                    fileEntry.createWriter( function( fileWriter ) {
-                            fileWriter.onwriteend = function( result ) {
-                                //TODO mostrare che il contenuto sul file e' stato scritto
-                            };
-                            fileWriter.onerror = function( error ) {
-                                //TODO mostrare che non e' possibile scrivere sul file
-                            };
+                fileEntry.createWriter( function( fileWriter ) {
+                    fileWriter.onwriteend = function( result ) {
+                        //TODO mostrare che il contenuto sul file e' stato scritto
+                    };
 
-                            fileWriter.write( data );
-                    }, function( error ) {
-                            //TODO mostrare che c'e' stato un errore
-                        }
-                    );
-                },
-                function( error ) {
-                    //TODO  mostrare che c'e' stato un errore
-                }
-            );},
-            function( error ) {
-                //TODO mostrare che c'e' stato un errore
-            }
-        );
+                    fileWriter.onerror = function( error ) {
+                        alert("ERROR: Impossibile salvare file, errore: " + error)
+                    };
+
+                    fileWriter.write( data );
+                }, function (error) {
+                    alert("ERROR: Impossibile salvare file, codice errore: " + error.code);
+                });
+            }, function (error) {
+                alert("ERROR: Impossibile salvare file, codice errore: " + error.code);
+            });
+        }, function (error) {
+            alert("ERROR: Impossibile salvare file, codice errore: " + error.code);
+        });
     },
 
     /**
@@ -75,22 +94,26 @@ let storage = {
         let fileName = fileToRead;
 
         window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory, function (directoryEntry) {
-            directoryEntry.getFile(fileName, {create: false}, function (fileEntry) {
+            directoryEntry.getFile(fileName, null, function (fileEntry) {
+
                 fileEntry.file(function (file) {
                     let reader = new FileReader();
 
-                    reader.onloadend = function () {
-                        //TODO usare il contenuto letto dal file
+                    reader.onloadend = function (event) {
+                        env = event.target.result;
+                        app.initSync(env);
                     };
 
                     reader.readAsText(file);
-                }, app.onErrorReadFile());
+                }, function (error) {
+                    alert("ERROR: Impossibile leggere file, codice errore: " + error.code);
+                });
+            }, function (error) {
+                alert("ERROR: Impossibile leggere file, codice errore: " + error.code);
             })
+        }, function (error) {
+            alert("ERROR: Impossibile leggere file, codice errore: " + error.code);
         });
-    },
-
-    onErrorReadFile: function(){
-        //TODO mostrare messaggion di errore
     },
 };
 
@@ -101,18 +124,17 @@ let kits = {
      * Funzione che recupera tutti i kit nell'ambiente tassato come parametro
      */
     getEnvironmentKits: function (env) {
-
-
         $.ajax({
             type: 'POST',
             data: {environment: env},
             url: 'http://danielfotografo.altervista.org/smartTrack/php/ajax/get_environment_kits.php'
         }).done(function (data) {
-            let list = '';
+            let incompleteKit = false;
             let isPresent = false;
             let envKitUl = $('.env-kit-ul');
             let jsonStatus = JSON.parse(data);
 
+            envKitUl.empty();
             //ripristino lo stato degli kit a completti
             $.each(envKitUl.children(), function (k, v) {
                 $(v).removeClass('incomplete-kit');
@@ -132,15 +154,17 @@ let kits = {
                 if(!isPresent) {
                     let listButton = $('<a href="#kit-objects" id="' + value['kit_id'] + '">' + value['description'] + '</a>').on('tap', function () {
                         let id = $(this).attr('id');
-                        $('.kit-objects').empty();
+                        let kitObjects = $('.kit-objects');
+                        kitObjects.empty();
+
                         $.each(jsonStatus[0], function (innerKey, innerValue) {
                             if(innerValue['tag_mac'] === "" && innerValue['kit_id'] === parseInt(id)){
-                                $('.kit-objects').append('<li>' + innerValue['ob_name'] + '</li>');
+                                kitObjects.append('<li class="missing-object">' + innerValue['ob_name'] + '</li>');
                             }
                         });
 
-                        $('.kit-objects').listview();
-                        $('.kit-objects').listview('refresh');
+                        kitObjects.listview();
+                        kitObjects.listview('refresh');
                     });
                     list.append(listButton);
                     envKitUl.append(list);
@@ -150,6 +174,7 @@ let kits = {
 
                 //se il kit e' incompletto lo marco come incompleto
                 if(value['tag_mac'] === ""){
+                    incompleteKit = true;
                     $('#' + value['kit_id']).removeClass('complete-kit');
                     $('#' + value['kit_id']).addClass('incomplete-kit');
                 }
@@ -157,13 +182,22 @@ let kits = {
 
             envKitUl.listview();
             envKitUl.listview('refresh');
+
+            if(incompleteKit){
+                if (!isIncomplete) {
+                    isIncomplete = true;
+                    $('#alert').css('display', 'block');
+                }
+            }else{
+                isIncomplete = false;
+                $('#alert').css('display', 'none');
+            }
         }).fail(function (error) {
-            alert('fail');
+            alert('Impossibile recuperare i kit, codice errore: ' + error.code);
         });
     },
 };
 
-// kits.getAnchorKits('B827EB45389B');
 
 $(document).ready( function () {
     app.initialize();
