@@ -76,13 +76,21 @@ class connection{
      * @param $env
      * @return array|database_errors|mysqli_stmt - i kit aganciati all'ancora oppure un errore
      */
-    function get_environment_kits($env){
-        $query = 'SELECT kit.kit_id, kit.description, alob.name, alob.ob_tag, alob.MAC from (SELECT * FROM (SELECT ob.name, ob.kit_id, ob.ob_tag FROM object AS ob JOIN (SELECT DISTINCT o.kit_id FROM object AS o JOIN 
-                    (SELECT t.MAC FROM tag AS t JOIN (SELECT * FROM anchors WHERE anchors.environment = ?) AS a ON t.AN_REF = a.MAC_ANCHOR) AS ta ON 
-                    o.ob_tag = ta.MAC) AS al ON ob.kit_id = al.kit_id) AS tk LEFT JOIN (SELECT t.MAC FROM tag AS t JOIN (SELECT * FROM anchors 
-                    WHERE anchors.environment = 1) AS a ON t.AN_REF = a.MAC_ANCHOR) AS ta ON tk.ob_tag = ta.MAC) AS alob JOIN kit ON kit.kit_id = alob.kit_id';
+    function get_environment_kits($env, $time){
+//        $query = 'SELECT kit.kit_id, kit.description, alob.name, alob.ob_tag, alob.MAC from (SELECT * FROM (SELECT ob.name, ob.kit_id, ob.ob_tag FROM object AS ob JOIN (SELECT DISTINCT o.kit_id FROM object AS o JOIN
+//                    (SELECT t.MAC FROM tag AS t JOIN (SELECT * FROM anchors WHERE anchors.environment = ?) AS a ON t.AN_REF = a.MAC_ANCHOR) AS ta ON
+//                    o.ob_tag = ta.MAC) AS al ON ob.kit_id = al.kit_id) AS tk LEFT JOIN (SELECT t.MAC FROM tag AS t JOIN (SELECT * FROM anchors
+//                    WHERE anchors.environment = 1) AS a ON t.AN_REF = a.MAC_ANCHOR) AS ta ON tk.ob_tag = ta.MAC) AS alob JOIN kit ON kit.kit_id = alob.kit_id';
 
-        $statement = $this->parse_and_execute_select($query, "i", $env);
+        $query = 'SELECT kit.kit_id, kit.description, alob.name, alob.ob_tag, alob.MAC from (SELECT * FROM 
+                  (SELECT ob.name, ob.kit_id, ob.ob_tag FROM object AS ob JOIN (SELECT DISTINCT o.kit_id FROM object AS o 
+                  JOIN (SELECT t.MAC, t.TIMESTAMP FROM tag AS t JOIN (SELECT * FROM anchors WHERE anchors.environment = ?) 
+                  AS a ON t.AN_REF = a.MAC_ANCHOR AND (NOW() - t.TIMESTAMP) / 60 < ?) AS ta ON o.ob_tag = ta.MAC) AS al 
+                  ON ob.kit_id = al.kit_id) AS tk LEFT JOIN (SELECT t.MAC, t.TIMESTAMP FROM tag AS t JOIN (SELECT * FROM anchors 
+                  WHERE anchors.environment = ?) AS a ON t.AN_REF = a.MAC_ANCHOR AND (NOW() - t.TIMESTAMP) / 60 < ?) AS ta 
+                  ON tk.ob_tag = ta.MAC) AS alob JOIN kit ON kit.kit_id = alob.kit_id';
+
+        $statement = $this->parse_and_execute_select($query, "iiii", $env, $time, $env, $time);
 
         if($statement instanceof database_errors)
             return $statement;

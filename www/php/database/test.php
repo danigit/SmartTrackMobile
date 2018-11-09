@@ -12,17 +12,17 @@ class test{
     private $connection;
 
     function __construct(){
-        $this->connection = new connection(true);
-        self::test_functions($this->connection->get_environment_kits(1));
+//        $this->connection = new connection(true);
+//        self::test_functions($this->connection->get_environment_kits(1, 10));
     }
 
 
     function test_functions($result){
-        if( $result instanceof database_errors)
-            var_dump($result->get_error_name());
-        else {
-            var_dump($result);
-        }
+//        if( $result instanceof database_errors)
+//            var_dump($result->get_error_name());
+//        else {
+//            var_dump($result);
+//        }
     }
 }
 

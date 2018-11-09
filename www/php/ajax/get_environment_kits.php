@@ -13,19 +13,24 @@ require_once 'helper.php';
  * Classe che recupera tutti i kit
  */
 class get_environment_kits extends client_server_interaction{
-    private $environment, $result;
+    private $environment, $time, $result;
 
     protected function elaborate_input(){
         $this->environment = $this->validate_string('environment');
 
         if(!$this->environment)
             $this->json_error('Nessun ambiente trovato');
+
+        $this->time = $this->validate_string('time');
+
+        if(!$this->time)
+            $this->json_error('Nessun ambiente trovato');
     }
 
     protected function get_db_informations(){
 
         $connection = $this->get_connection();
-        $this->result = $connection->get_environment_kits($this->environment);
+        $this->result = $connection->get_environment_kits($this->environment, $this->time);
 
         if(is_error($this->result))
             $this->json_error("Errore nel recupero dei kit dall'ambiente");

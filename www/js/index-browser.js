@@ -16,122 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-// import * as cordova from "../../plugins/cordova-plugin-file/www/fileSystemPaths";
 
 let isIncomplete = false;
-
-let app = {
-    // Application Constructor
-    initialize: function() {
-        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false)
-    },
-
-    onDeviceReady: function() {
-
-        storage.writeConfiguration('configuration.json', {environment: 1, address: "", time: 1800000000});
-        storage.readConfiguration('configuration.json');
-
-        //chiamo la funzione ripetitivamento dopo ogni secondo
-
-    },
-
-    initSync: function (environment) {
-        let json = $.parseJSON(environment);
-        let envId = json.environment;
-        let address = json.address;
-        let time = json.time;
-
-
-        setInterval(function (){
-            //chiamo la funzione ripetitivamento dopo ogni secondo
-            kits.getEnvironmentKits(envId, address, time);
-        }, 1000);
-
-        if($('#alert').length){
-            $('#close-alert').on('click', function () {
-                $('#alert').css('display', 'none')
-            })
-        }
-    }
-};
-
-let storage = {
-    /**
-     * Funzione che crea un file nel file system del dispositivo
-     * @param fileToCreate - nome del file
-     * @param fileContent - il contenuto del file
-     */
-    writeConfiguration: function(fileToCreate, fileContent){
-        let fileName = fileToCreate;
-        let data = fileContent;
-
-        window.resolveLocalFileSystemURL( cordova.file.externalRootDirectory, function( directoryEntry ) {
-            directoryEntry.getFile(fileName, { create: true }, function( fileEntry ) {
-                fileEntry.createWriter( function( fileWriter ) {
-                    fileWriter.onwriteend = function( result ) {
-                        //TODO mostrare che il contenuto sul file e' stato scritto
-                    };
-
-                    fileWriter.onerror = function( error ) {
-                        alert("ERROR: Impossibile salvare file, errore: " + error)
-                    };
-
-                    fileWriter.write( data );
-                }, function (error) {
-                    alert("ERROR: Impossibile salvare file, codice errore: " + error.code);
-                });
-            }, function (error) {
-                alert("ERROR: Impossibile salvare file, codice errore: " + error.code);
-            });
-        }, function (error) {
-            alert("ERROR: Impossibile salvare file, codice errore: " + error.code);
-        });
-    },
-
-    /**
-     * Funzione che legge un file dal file system del dispositivo
-     * @param fileToRead - nome del file da leggere
-     */
-    readConfiguration: function(fileToRead){
-        let fileName = fileToRead;
-
-        window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory, function (directoryEntry) {
-            directoryEntry.getFile(fileName, null, function (fileEntry) {
-
-                fileEntry.file(function (file) {
-                    let reader = new FileReader();
-
-                    reader.onloadend = function (event) {
-                        env = event.target.result;
-                        app.initSync(env);
-                    };
-
-                    reader.readAsText(file);
-                }, function (error) {
-                    alert("ERROR: Impossibile leggere file, codice errore: " + error.code);
-                });
-            }, function (error) {
-                alert("ERROR: Impossibile leggere file, codice errore: " + error.code);
-            })
-        }, function (error) {
-            alert("ERROR: Impossibile leggere file, codice errore: " + error.code);
-        });
-    },
-};
-
 
 let kits = {
 
     /**
      * Funzione che recupera tutti i kit nell'ambiente tassato come parametro
      */
+
     getEnvironmentKits: function (env, address, time) {
         $.ajax({
             type: 'POST',
             data: {environment: env, time: time},
             // url: ''
-            url: address
+            url: 'http://localhost/SmartTrackMobile/www/php/ajax/get_environment_kits.php'
+            // url: address
         }).done(function (data) {
+            console.log(data);
             let incompleteKit = false;
             let isPresent = false;
             let envKitUl = $('.env-kit-ul');
@@ -201,7 +103,33 @@ let kits = {
     },
 };
 
+function findGetParameter(parameterName) {
+    let result = null,
+        tmp = [];
+    location.search
+        .substr(1)
+        .split("&")
+        .forEach(function (item) {
+            tmp = item.split("=");
+            if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+        });
+    return result;
+}
 
 $(document).ready( function () {
-    app.initialize();
+    let environment = findGetParameter('environment');
+    let time = findGetParameter('time');
+    let address = '';
+    // let address = findGetParameter('address');
+
+    setInterval(function (){
+        //chiamo la funzione ripetitivamento dopo ogni secondo
+        kits.getEnvironmentKits(environment, address, time);
+    }, 1000);
+
+    if($('#alert').length){
+        $('#close-alert').on('click', function () {
+            $('#alert').css('display', 'none')
+        })
+    }
 });
