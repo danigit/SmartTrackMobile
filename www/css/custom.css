@@ -5,7 +5,20 @@
     padding: 31px!important;
 }
 
+.lonely-name-label{
+    font-size: x-large;
+    text-align: center;
+    background-color: #6AB8C1!important;
+    padding: 31px!important;
+}
+
 .kit-name-label p{
+    margin: 0;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.lonely-name-label p{
     margin: 0;
     color: #FFFFFF;
     font-weight: bold;
@@ -101,6 +114,11 @@ thead tr{
     margin: 50px auto auto!important;
 }
 
+.lonely-objects-list{
+    width: 99%;
+    margin: 50px auto auto!important;
+}
+
 .kit-objects li {
     margin-bottom: 10px!important;
 }
@@ -108,6 +126,17 @@ thead tr{
 .complete-kit a{
     border: 2px solid #3dc235!important;
     background-color: #3dc235!important;
+    color: #FFFFFF!important;
+    text-shadow: none!important;
+    border-radius: 10px!important;
+    text-align: center!important;
+    font-size: x-large!important;
+    font-weight: bold!important;
+}
+
+.lonely-objects a{
+    border: 2px solid #FFB950!important;
+    background-color: #FFB950!important;
     color: #FFFFFF!important;
     text-shadow: none!important;
     border-radius: 10px!important;
@@ -131,6 +160,17 @@ thead tr{
 
 /*kit objects*/
 .missing-object{
+    border: 2px solid #CF3D44!important;
+    background-color: #CF3D44!important;
+    color: #FFFFFF!important;
+    text-shadow: none!important;
+    border-radius: 10px!important;
+    text-align: center!important;
+    font-size: large;!important;
+    font-weight: bold!important;
+}
+
+.lonely-object{
     border: 2px solid #CF3D44!important;
     background-color: #CF3D44!important;
     color: #FFFFFF!important;

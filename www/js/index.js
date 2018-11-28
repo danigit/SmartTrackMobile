@@ -28,7 +28,7 @@ let app = {
 
     onDeviceReady: function() {
 
-        storage.writeConfiguration('configuration.json', {environment: 1, address: "", time: 1800000000});
+        storage.writeConfiguration('configuration.json', {environment: 1, address: "http://danielfotografo.altervista.org/smartTrack/php/ajax/get_environment_kits.php", time: 1800000000});
         storage.readConfiguration('configuration.json');
 
         //chiamo la funzione ripetitivamento dopo ogni secondo
@@ -126,75 +126,111 @@ let kits = {
      * Funzione che recupera tutti i kit nell'ambiente tassato come parametro
      */
     getEnvironmentKits: function (env, address, time) {
+        let envKitUl = $('.env-kit-ul');
         $.ajax({
             type: 'POST',
             data: {environment: env, time: time},
             // url: ''
             url: address
         }).done(function (data) {
-            let incompleteKit = false;
-            let isPresent = false;
-            let envKitUl = $('.env-kit-ul');
-            let jsonStatus = JSON.parse(data);
+            $.ajax({
+                type: 'POST',
+                data: {environment: env},
+                url: 'http://danielfotografo.altervista.org/smartTrack/php/ajax/get_environment_objects.php'
+            }).done(function (lost) {
+                // alert(data);
+                envKitUl.empty();
 
-            envKitUl.empty();
-            //ripristino lo stato degli kit a completti
-            $.each(envKitUl.children(), function (k, v) {
-                $(v).removeClass('incomplete-kit');
-                $(v).addClass('complete-kit');
-            });
+                let incompleteKit = false;
+                let isPresent = false;
+                let jsonStatus = JSON.parse(data);
+                let lonelyJsonStatus = JSON.parse(lost);
 
-            $.each(jsonStatus[0], function (key, value) {
-                let list = $('<li id="' + value['kit_id'] + '" class="complete-kit"></li>');
-
-                //controllo se il kit e' gia' presente nella lista
+                //ripristino lo stato degli kit a completti
                 $.each(envKitUl.children(), function (k, v) {
-                    if(parseInt($(v).attr('id')) === value['kit_id'])
-                        isPresent = true;
+                    $(v).removeClass('incomplete-kit');
+                    $(v).addClass('complete-kit');
                 });
 
-                //se non e' presente lo inserisco
-                if(!isPresent) {
-                    let listButton = $('<a href="#kit-objects" id="' + value['kit_id'] + '">' + value['description'] + '</a>').on('tap', function () {
-                        let id = $(this).attr('id');
-                        let kitObjects = $('.kit-objects');
-                        kitObjects.empty();
+                $.each(jsonStatus[0], function (key, value) {
+                    let list = $('<li id="' + value['kit_id'] + '" class="complete-kit"></li>');
 
-                        $.each(jsonStatus[0], function (innerKey, innerValue) {
-                            if(innerValue['tag_mac'] === "" && innerValue['kit_id'] === parseInt(id)){
-                                kitObjects.append('<li class="missing-object">' + innerValue['ob_name'] + '</li>');
-                            }
+                    //controllo se il kit e' gia' presente nella lista
+                    $.each(envKitUl.children(), function (k, v) {
+                        if(parseInt($(v).attr('id')) === value['kit_id'])
+                            isPresent = true;
+                    });
+
+                    //se non e' presente lo inserisco
+                    if(!isPresent) {
+                        let listButton = $('<a href="#kit-objects" id="' + value['kit_id'] + '">' + value['description'] + '</a>').on('tap', function () {
+                            let id = $(this).attr('id');
+                            let kitObjects = $('.kit-objects');
+                            kitObjects.empty();
+
+                            $.each(jsonStatus[0], function (innerKey, innerValue) {
+                                if(innerValue['tag_mac'] === "" && innerValue['kit_id'] === parseInt(id)){
+                                    kitObjects.append('<li class="missing-object">' + innerValue['ob_name'] + '</li>');
+                                }
+                            });
+
+                            kitObjects.listview();
+                            kitObjects.listview('refresh');
+                        });
+                        list.append(listButton);
+                        envKitUl.append(list);
+                    }
+
+                    isPresent = false;
+
+                    //se il kit e' incompletto lo marco come incompleto
+                    if(value['tag_mac'] === ""){
+                        incompleteKit = true;
+                        $('#' + value['kit_id']).removeClass('complete-kit');
+                        $('#' + value['kit_id']).addClass('incomplete-kit');
+                    }
+                });
+
+                if(incompleteKit){
+                    if (!isIncomplete) {
+                        isIncomplete = true;
+                        $('#alert').css('display', 'block');
+                    }
+                }else{
+                    isIncomplete = false;
+                    $('#alert').css('display', 'none');
+                }
+
+                if (lonelyJsonStatus[0].length) {
+                    let lonelyList = $('<li id="lonely-objects" class="lonely-objects"></li>');
+
+                    let lonelyListButton = $('<a href="#lonely-objects-page" id="lonely-objects-button">OGGETTI SPARSI</a>').on('tap', function () {
+                        // let id = $(this).attr('id');
+                        let lonelyObjects = $('.lonely-objects-list');
+                        lonelyObjects.empty();
+
+                        $.each(lonelyJsonStatus[0], function (innerKey, innerValue) {
+                            alert(innerKey);
+                            alert(innerValue);
+                            lonelyObjects.append('<li class="lonely-object">' + innerValue['name'] + '</li>');
                         });
 
-                        kitObjects.listview();
-                        kitObjects.listview('refresh');
+                        lonelyObjects.listview();
+                        lonelyObjects.listview('refresh');
+                        alert('button clicked');
                     });
-                    list.append(listButton);
-                    envKitUl.append(list);
+
+                    lonelyList.append(lonelyListButton);
+                    envKitUl.append(lonelyList);
                 }
 
-                isPresent = false;
+                envKitUl.listview();
+                envKitUl.listview('refresh');
 
-                //se il kit e' incompletto lo marco come incompleto
-                if(value['tag_mac'] === ""){
-                    incompleteKit = true;
-                    $('#' + value['kit_id']).removeClass('complete-kit');
-                    $('#' + value['kit_id']).addClass('incomplete-kit');
-                }
-            });
-
-            envKitUl.listview();
-            envKitUl.listview('refresh');
-
-            if(incompleteKit){
-                if (!isIncomplete) {
-                    isIncomplete = true;
-                    $('#alert').css('display', 'block');
-                }
-            }else{
-                isIncomplete = false;
-                $('#alert').css('display', 'none');
-            }
+            }).fail(function (error) {
+                alert('Impossibile recuperare oggetti vaganti');
+                alert(error);
+            })
         }).fail(function (error) {
             alert('Impossibile recuperare i kit, codice errore: ' + error.code);
         });
