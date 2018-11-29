@@ -110,9 +110,9 @@ class connection{
      * @return array|database_errors|mysqli_stmt
      */
     function get_environment_objects($env){
-        $query = 'SELECT * FROM object JOIN (SELECT MAC, AN_REF FROM tag JOIN (SELECT MAC_ANCHOR FROM anchors WHERE anchors.environment = ?) 
-                  AS env ON tag.AN_REF = env.MAC_ANCHOR) AS envtag ON object.ob_tag = envtag.MAC WHERE object.kit_id IS NULL
-';
+        $query = 'SELECT cod, name, kit_create FROM environment JOIN (SELECT cod, name, environment FROM object JOIN (SELECT MAC, AN_REF, environment FROM tag 
+                  JOIN (SELECT MAC_ANCHOR, environment FROM anchors WHERE anchors.environment = ?) AS env ON tag.AN_REF = env.MAC_ANCHOR) 
+                  AS envtag ON object.ob_tag = envtag.MAC WHERE object.kit_id IS NULL) AS envkit ON envkit.environment = environment.env_id';
 
         $statement = $this->parse_and_execute_select($query, "i", $env);
 
@@ -124,10 +124,61 @@ class connection{
         $result_array = array();
 
         while ($row = $result->fetch_array()){
-            $result_array[] = array('name' => $row['name']);
+            $result_array[] = array('cod' => $row['cod'], 'name' => $row['name'], 'kit_create' => $row['kit_create']);
         }
 
         return $result_array;
+    }
+
+
+    /**
+     * Funzione che crea un nuovo kit inserendolo nella tabella kit
+     * @param $description - la descrizione del kit
+     * @param $data - gli altri campi del kit
+     * @return mixed - l'id del kit inserito oppure un errore
+     */
+    function create_kit($description, $data){
+
+        $this->connection->autocommit(false);
+        $errors = array();
+
+        $now_date = date('Y-m-d H:i:s');
+        $query = "INSERT INTO kit (description, creation_date) VALUES (?, '$now_date')";
+        $resultInsert = $this->parse_and_execute_insert($query, "s", $description);
+
+        if($resultInsert === false){
+            array_push($errors, 'insert');
+        }
+
+        $id = $this->connection->insert_id;
+        $result = array();
+        //TODO fo schifo usare join (forse)
+        foreach ($data as $datum) {
+            $query = "UPDATE object SET kit_id = ? WHERE cod = ?";
+            $resultUpdate = $this->parse_and_execute_select($query, "ii", $id, $datum);
+
+            if($resultUpdate == false){
+                array_push($errors, 'update');
+            }
+
+            $result[] = $datum;
+
+            $query = "INSERT INTO kit_history (kit_id, object_id) VALUES (?, ?)";
+            $resultHistoryInsert = $this->parse_and_execute_insert($query, "ii", $id, $datum);
+
+            if ($resultHistoryInsert == false)
+                array_push($errors, 'insertHistory');
+        }
+
+        if(!empty($errors)){
+            $this->connection->rollback();
+            return new database_errors(database_errors::$ERROR_ON_GETTING_KIT);
+        }
+
+        $this->connection->commit();
+
+//        return $errors;
+        return $result;
     }
 
     /**

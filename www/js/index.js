@@ -145,6 +145,7 @@ let kits = {
                 let isPresent = false;
                 let jsonStatus = JSON.parse(data);
                 let lonelyJsonStatus = JSON.parse(lost);
+                let count = 0;
 
                 //ripristino lo stato degli kit a completti
                 $.each(envKitUl.children(), function (k, v) {
@@ -207,17 +208,67 @@ let kits = {
                     let lonelyListButton = $('<a href="#lonely-objects-page" id="lonely-objects-button">OGGETTI SPARSI</a>').on('tap', function () {
                         // let id = $(this).attr('id');
                         let lonelyObjects = $('.lonely-objects-list');
+                        let createKit = false;
                         lonelyObjects.empty();
-
                         $.each(lonelyJsonStatus[0], function (innerKey, innerValue) {
-                            alert(innerKey);
-                            alert(innerValue);
-                            lonelyObjects.append('<li class="lonely-object">' + innerValue['name'] + '</li>');
+                            if(innerValue['kit_create'] === 1) {
+                                lonelyObjects.append('<li class="lonely-object" id="' + innerValue['cod'] + '"><div class="flot-left width-100"><span class="float-left">'
+                                    + innerValue['name'] + '</span><span class="float-right margin-right-30px"><input type="checkbox" class="checkAntani"></span></div></li>');
+                                //non va bene come soluzione devo spostare l'if fuori dal ciclo
+                                $('#create-kit-container').empty();
+                                let createKitButton = $('<a href="#" id="create-kit" class="ui-btn ui-shadow ui-corner-all create-kit-button margin-auto font-large">CREA KIT</a>').on('click', function () {
+                                    let createKitForm = new FormData();
+                                    if ($('#kit-name input').val() === '')
+                                        showError($('#error-lonely-objects'), "Creazione kit", "Inserire un none e seleziona almeno un oggetto", "error");
+                                    $.each(lonelyObjects.children(), function (key, value) {
+                                        if($(value).find('input').prop('checked')){
+                                            let obj = $(value).attr('id');
+                                            console.log('key' + key);
+                                            console.log(obj);
+                                            createKitForm.append("" + count, obj);
+                                            count++;
+                                        }
+                                        // alert($(value).find('input').prop('checked'));
+                                    });
+
+                                    if(count > 0) {
+                                        console.log(createKitForm);
+                                        createKitForm.append('count', "" + count);
+                                        createKitForm.append('description', $('#kit-name input').val());
+
+                                        alert('making request');
+                                        $.ajax({
+                                            type: 'POST',
+                                            processData: false,
+                                            contentType: false,
+                                            data: createKitForm,
+                                            url: 'http://danielfotografo.altervista.org/smartTrack/php/ajax/create_kit.php'
+                                        }).done(function (data) {
+                                            alert('sended');
+                                            showError($('#error-lonely-objects'), "Creazione kit", "Il kit e' stato creato con successo", "success");
+                                            setTimeout(function () {
+                                                window.location.href = 'index.html';
+                                            }, 1500);
+                                            alert(data);
+                                        }).fail(function (error) {
+                                            alert('non posso salvare kit');
+                                        })
+                                    }else {
+                                        showError($('#error-lonely-objects'), "Creazione kit", "Inserire un none e seleziona almeno un oggetto", "error");
+                                    }
+                                });
+                                $('#create-kit-container').append(createKitButton);
+                                createKit = true;
+                            }else
+                                lonelyObjects.append('<li class="lonely-object">' + innerValue['name'] + '</li>');
                         });
 
+                        if (createKit){
+                            $('#kit-name').append($('<input type="text" placeholder="Inserire il nome del kit">'));
+                            createKit = false;
+                        }
                         lonelyObjects.listview();
                         lonelyObjects.listview('refresh');
-                        alert('button clicked');
                     });
 
                     lonelyList.append(lonelyListButton);
@@ -229,7 +280,6 @@ let kits = {
 
             }).fail(function (error) {
                 alert('Impossibile recuperare oggetti vaganti');
-                alert(error);
             })
         }).fail(function (error) {
             alert('Impossibile recuperare i kit, codice errore: ' + error.code);
@@ -237,6 +287,37 @@ let kits = {
     },
 };
 
+
+/**
+ * Funzione che mostra un errore in modalita' popup
+ * @param errorPopup
+ * @param title - titolo dell'errore
+ * @param content - contenuto dell'errore
+ * @param type - il tipo di messaggio
+ */
+function showError(errorPopup, title, content, type) {
+    let elem = errorPopup;
+    if(type === 'success') {
+        elem.removeClass('error-popup');
+        elem.addClass('success-popup');
+        $('.error-title').text(title);
+        $('.error-content').text(content);
+        elem.popup();
+        elem.popup("open");
+
+    }else if(type === 'error'){
+        elem.removeClass('success-popup');
+        elem.addClass('error-popup');
+        $('.error-title').text(title);
+        $('.error-content').text(content);
+        elem.popup();
+        elem.popup("open");
+    }
+
+    setTimeout(function () {
+        elem.popup("close");
+    }, 2000);
+}
 
 $(document).ready( function () {
     app.initialize();

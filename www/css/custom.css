@@ -95,6 +95,24 @@ thead tr{
     font-size: x-large!important;
 }
 
+#kit-name input{
+    border: 2px solid #6AB8C1!important;
+}
+
+.error-popup{
+    border: 1px solid #FFFFFF!important;
+    background: #E52612!important;
+    color: white!important;
+    box-shadow: 0 0 10px 7px #E52612!important;
+}
+
+.success-popup{
+    border: 3px solid #5DB553!important;
+    background: #5DB553!important;
+    color: white!important;
+    box-shadow: 0 0 16px 7px #5DB553!important;
+}
+
 /*end main*/
 
 
@@ -171,6 +189,7 @@ thead tr{
 }
 
 .lonely-object{
+    margin-bottom: 5px!important;
     border: 2px solid #CF3D44!important;
     background-color: #CF3D44!important;
     color: #FFFFFF!important;
@@ -180,4 +199,49 @@ thead tr{
     font-size: large;!important;
     font-weight: bold!important;
 }
+
+.create-kit-button{
+    width: 100%!important;
+    margin: 5px 0 0 0!important;
+    padding-left: 0!important;
+    padding-right: 0!important;
+    font-size: large!important;
+    outline: 1px solid #FF4F63 !important;
+    /*border-right-width: 1px !important;*/
+    /*border-left-width: 1px !important;*/
+    border-radius: 0!important;
+    /*background-color: #3dc235!important;*/
+    color: #FF4F63!important;
+}
 /*end kit objects*/
+
+/*helper*/
+
+.flot-left{
+    float: left!important;
+}
+
+.float-right{
+    float: right!important;
+}
+
+.width-100{
+    width: 100%!important;
+}
+
+.margin-auto{
+    margin: auto!important;
+}
+
+.font-large{
+    font-size: large!important;
+}
+
+.margin-right-30px{
+    margin-right: 30px!important;
+}
+
+.margin-10px{
+    margin: 10px!important;
+}
+/*end helper*/

@@ -47,7 +47,7 @@
     <body>
         <div data-role="page">
             <div data-role="header" id="env-kits" class="kit-name-label">
-                <p>kit aganciati</p>
+                <p>kit agganciati</p>
             </div>
             <div data-role="content">
                 <div class="env-kit-container">
@@ -87,12 +87,39 @@
                     <ul class="lonely-objects-list">
 
                     </ul>
+
+                    <div id="kit-name" class="margin-10px">
+
+                    </div>
                 </div>
+            </div>
+
+            <div id="error-lonely-objects" data-role="popup" data-overlay-theme="a" class="ui-content error-popup" data-history="false">
+                <p class="error-title"></p>
+                <p class="error-content"></p>
+            </div>
+
+            <div data-role="footer" data-position="fixed" data-fullscreen="false">
+                <div id="create-kit-container"></div>
             </div>
         </div>
 
+        <!--<div data-role="page" id="kit-creation">-->
+            <!--<div data-role="header" id="kit-creation-header" class="kit-name-label">-->
+                <!--<p>Creazione kit</p>-->
+            <!--</div>-->
+
+            <!--<div data-role="content">-->
+                <!--<div class="env-kit-container">-->
+                    <!--<ul class="kit-creation-list">-->
+
+                    <!--</ul>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+
         <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
-        <!--<script type="text/javascript" src="js/index-browser.js"></script>-->
+        <!--<script type="text/javascript" src="js/index.js"></script>-->
+        <script type="text/javascript" src="js/index-browser.js"></script>
     </body>
 </html>
