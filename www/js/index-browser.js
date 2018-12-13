@@ -46,7 +46,7 @@ let kits = {
 
                     //se non e' presente lo inserisco
                     if(!isPresent) {
-                        let listButton = $('<a href="#kit-objects" id="' + value['kit_id'] + '">' + value['description'] + '</a>').on('tap', function (e) {
+                        let listButton = $('<a href="#kit-objects" id="' + value['kit_id'] + '-button">' + value['description'] + '</a>').on('tap', function (e) {
                             if (list.hasClass('complete-kit')){
                                 e.preventDefault();
                             }
@@ -165,6 +165,11 @@ let kits = {
                 envKitUl.listview();
                 envKitUl.listview('refresh');
 
+                $.each(envKitUl.children(), function (key, value) {
+                    if ($(value).hasClass('complete-kit')){
+                        $(value).find('a').removeClass('ui-btn-icon-right ui-icon-carat-r')
+                    }
+                });
             }).fail(function (error) {
                 alert('Impossibile recuperare oggetti vaganti');
             })

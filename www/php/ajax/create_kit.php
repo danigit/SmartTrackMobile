@@ -28,9 +28,6 @@ class create_kit extends client_server_interaction {
         for($i = 0; $i < $this->count; $i++){
             $this->data[] = $this->validate_string($i);
         }
-
-//        var_dump($this->data);
-//        exit;
     }
 
     protected function get_db_informations(){
