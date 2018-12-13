@@ -1,44 +1,26 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
 
 let isIncomplete = false;
 
 let kits = {
 
     /**
-     * Funzione che recupera tutti i kit nell'ambiente tassato come parametro
+     * Funzione che recupera tutti i kit nell'ambiente passato come parametro
      */
-
     getEnvironmentKits: function (env, address, time) {
         let envKitUl = $('.env-kit-ul');
+        //chiamata ajax per recuperare i kit
         $.ajax({
             type: 'POST',
             data: {environment: env, time: time},
             // url: ''
             url: address
         }).done(function (data) {
+            //chiamata ajax per recuperare gli oggetti
             $.ajax({
                 type: 'POST',
                 data: {environment: env},
                 url: 'http://danielfotografo.altervista.org/smartTrack/php/ajax/get_environment_objects.php'
             }).done(function (lost) {
-                // alert(data);
                 envKitUl.empty();
 
                 let incompleteKit = false;
@@ -95,6 +77,7 @@ let kits = {
                     }
                 });
 
+                //mostro l'alert se trovo almento un kit incompleto
                 if(incompleteKit){
                     if (!isIncomplete) {
                         isIncomplete = true;
@@ -105,23 +88,29 @@ let kits = {
                     $('#alert').css('display', 'none');
                 }
 
+                //mostro gli oggetti sparsi
                 if (lonelyJsonStatus[0].length) {
                     let lonelyList = $('<li id="lonely-objects" class="lonely-objects"></li>');
 
                     let lonelyListButton = $('<a href="#lonely-objects-page" id="lonely-objects-button">OGGETTI SPARSI</a>').on('tap', function () {
-                        // let id = $(this).attr('id');
                         let lonelyObjects = $('.lonely-objects-list');
                         let createKit = false;
                         lonelyObjects.empty();
                         $('#kit-name').empty();
+
+                        //gestisco gli oggetti sparsi
                         $.each(lonelyJsonStatus[0], function (innerKey, innerValue) {
+                            //se sono nell'ambiente dove posso creare kit, carico l'interfaccia per la creazione del kit
                             if(innerValue['kit_create'] === 1) {
                                 lonelyObjects.append('<li class="lonely-object" id="' + innerValue['cod'] + '"><div class="flot-left width-100"><span class="float-left">'
                                     + innerValue['name'] + '</span><span class="float-right margin-right-30px"><input type="checkbox" class="checkAntani"></span></div></li>').trigger('create');
+
                                 //non va bene come soluzione devo spostare l'if fuori dal ciclo
                                 $('#create-kit-container').empty();
                                 let createKitButton = $('<a href="#" id="create-kit" class="ui-btn ui-shadow ui-corner-all create-kit-button margin-auto font-large">CREA KIT</a>').on('click', function () {
+                                    //raccolgo i dati da spedire
                                     let createKitForm = new FormData();
+
                                     if ($('#kit-name input').val() === '')
                                         showError($('#error-lonely-objects'), language['create-kit-error-title'], language['create-kit-error-message'], "error");
                                     $.each(lonelyObjects.children(), function (key, value) {
@@ -130,13 +119,13 @@ let kits = {
                                             createKitForm.append("" + count, obj);
                                             count++;
                                         }
-                                        // alert($(value).find('input').prop('checked'));
                                     });
 
                                     if(count > 0) {
                                         createKitForm.append('count', "" + count);
                                         createKitForm.append('description', $('#kit-name input').val());
 
+                                        //faccio la chiamata per creare il kit
                                         $.ajax({
                                             type: 'POST',
                                             processData: false,

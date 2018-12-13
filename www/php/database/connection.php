@@ -143,7 +143,7 @@ class connection{
         $errors = array();
 
         $now_date = date('Y-m-d H:i:s');
-        $query = "INSERT INTO kit (description, creation_date) VALUES (?, '$now_date')";
+        $query = "INSERT INTO kit (description, creation_date, is_sent) VALUES (?, '$now_date', 1)";
         $resultInsert = $this->parse_and_execute_insert($query, "s", $description);
 
         if($resultInsert === false){

@@ -1,23 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-// import * as cordova from "../../plugins/cordova-plugin-file/www/fileSystemPaths";
-
 let isIncomplete = false;
 
 let app = {
@@ -26,13 +6,14 @@ let app = {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false)
     },
 
+    /**
+     * Funzione che viene chiamata per inizializzare il sistema
+     */
     onDeviceReady: function() {
-
+        //scrivo il file di configurazione
         storage.writeConfiguration('configuration.json', {environment: 1, address: "http://danielfotografo.altervista.org/smartTrack/php/ajax/get_environment_kits.php", time: 1800000000});
+        //leggo il file di configurazione
         storage.readConfiguration('configuration.json');
-
-        //chiamo la funzione ripetitivamento dopo ogni secondo
-
     },
 
     initSync: function (environment) {
@@ -123,7 +104,7 @@ let storage = {
 let kits = {
 
     /**
-     * Funzione che recupera tutti i kit nell'ambiente tassato come parametro
+     * Funzione che recupera tutti i kit nell'ambiente passato come parametro
      */
     getEnvironmentKits: function (env, address, time) {
         let envKitUl = $('.env-kit-ul');
