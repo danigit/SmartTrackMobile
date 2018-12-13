@@ -110,10 +110,11 @@ let kits = {
                         let lonelyObjects = $('.lonely-objects-list');
                         let createKit = false;
                         lonelyObjects.empty();
+                        $('#kit-name').empty();
                         $.each(lonelyJsonStatus[0], function (innerKey, innerValue) {
                             if(innerValue['kit_create'] === 1) {
                                 lonelyObjects.append('<li class="lonely-object" id="' + innerValue['cod'] + '"><div class="flot-left width-100"><span class="float-left">'
-                                    + innerValue['name'] + '</span><span class="float-right margin-right-30px"><input type="checkbox" class="checkAntani"></span></div></li>');
+                                    + innerValue['name'] + '</span><span class="float-right margin-right-30px"><input type="checkbox" class="checkAntani"></span></div></li>').trigger('create');
                                 //non va bene come soluzione devo spostare l'if fuori dal ciclo
                                 $('#create-kit-container').empty();
                                 let createKitButton = $('<a href="#" id="create-kit" class="ui-btn ui-shadow ui-corner-all create-kit-button margin-auto font-large">CREA KIT</a>').on('click', function () {
@@ -133,7 +134,6 @@ let kits = {
                                         createKitForm.append('count', "" + count);
                                         createKitForm.append('description', $('#kit-name input').val());
 
-                                        alert('making request');
                                         $.ajax({
                                             type: 'POST',
                                             processData: false,
@@ -141,7 +141,6 @@ let kits = {
                                             data: createKitForm,
                                             url: 'http://danielfotografo.altervista.org/smartTrack/php/ajax/create_kit.php'
                                         }).done(function (data) {
-                                            alert(document.referrer);
                                             showError($('#error-lonely-objects'), language['create-kit-error-title'], language['create-kit-success-message'], "success");
                                             setTimeout(function () {
                                                window.location.href = document.referrer;
@@ -160,7 +159,7 @@ let kits = {
                         });
 
                         if (createKit){
-                            $('#kit-name').append($('<input type="text" placeholder="Inserire il nome del kit">'));
+                            $('#kit-name').append($('<input type="text" placeholder="Inserire il nome del kit">')).trigger('create');
                             createKit = false;
                         }
                         lonelyObjects.listview();
