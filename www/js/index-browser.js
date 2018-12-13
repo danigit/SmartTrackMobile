@@ -26,9 +26,6 @@ let kits = {
      */
 
     getEnvironmentKits: function (env, address, time) {
-        console.log(env);
-        console.log(address);
-        console.log(time);
         let envKitUl = $('.env-kit-ul');
         $.ajax({
             type: 'POST',
@@ -122,12 +119,10 @@ let kits = {
                                 let createKitButton = $('<a href="#" id="create-kit" class="ui-btn ui-shadow ui-corner-all create-kit-button margin-auto font-large">CREA KIT</a>').on('click', function () {
                                     let createKitForm = new FormData();
                                     if ($('#kit-name input').val() === '')
-                                        showError($('#error-lonely-objects'), "Creazione kit", "Inserire un none e seleziona almeno un oggetto", "error");
+                                        showError($('#error-lonely-objects'), language['create-kit-error-title'], language['create-kit-error-message'], "error");
                                     $.each(lonelyObjects.children(), function (key, value) {
                                         if($(value).find('input').prop('checked')){
                                             let obj = $(value).attr('id');
-                                            console.log('key' + key);
-                                            console.log(obj);
                                             createKitForm.append("" + count, obj);
                                             count++;
                                         }
@@ -135,7 +130,6 @@ let kits = {
                                     });
 
                                     if(count > 0) {
-                                        console.log(createKitForm);
                                         createKitForm.append('count', "" + count);
                                         createKitForm.append('description', $('#kit-name input').val());
 
@@ -147,12 +141,11 @@ let kits = {
                                             data: createKitForm,
                                             url: 'http://danielfotografo.altervista.org/smartTrack/php/ajax/create_kit.php'
                                         }).done(function (data) {
-                                            alert('sended');
-                                            showError($('#error-lonely-objects'), "Creazione kit", "Il kit e' stato creato con successo", "success");
+                                            alert(document.referrer);
+                                            showError($('#error-lonely-objects'), language['create-kit-error-title'], language['create-kit-success-message'], "success");
                                             setTimeout(function () {
-                                               window.location.href = 'index.html?environment=1&time=100000000';
+                                               window.location.href = document.referrer;
                                             }, 1500);
-                                            alert(data);
                                         }).fail(function (error) {
                                             alert('non posso salvare kit');
                                         })
