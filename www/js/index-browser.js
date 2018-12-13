@@ -64,7 +64,10 @@ let kits = {
 
                     //se non e' presente lo inserisco
                     if(!isPresent) {
-                        let listButton = $('<a href="#kit-objects" id="' + value['kit_id'] + '">' + value['description'] + '</a>').on('tap', function () {
+                        let listButton = $('<a href="#kit-objects" id="' + value['kit_id'] + '">' + value['description'] + '</a>').on('tap', function (e) {
+                            if (list.hasClass('complete-kit')){
+                                e.preventDefault();
+                            }
                             let id = $(this).attr('id');
                             let kitObjects = $('.kit-objects');
                             kitObjects.empty();
