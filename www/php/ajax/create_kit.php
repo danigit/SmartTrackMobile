@@ -13,7 +13,7 @@ require_once 'client_server_interaction.php';
  */
 class create_kit extends client_server_interaction {
 
-    private $count, $description, $data, $result;
+    private $count, $description, $data, $time, $result;
 
     protected function elaborate_input(){
         $this->count = $this->validate_string('count');
@@ -21,7 +21,13 @@ class create_kit extends client_server_interaction {
         if($this->count === false)
             $this->json_error('Numero oggetti non ricevuto');
 
+        $this->time = $this->validate_string('time');
+
+        if ($this->time === false)
+            $this->json_error('Nessun tempo ricevuto');
+
         $this->description = $this->validate_string('description');
+
         if ($this->description === false)
             $this->json_error('Inserire una descrizione');
 
@@ -32,7 +38,7 @@ class create_kit extends client_server_interaction {
 
     protected function get_db_informations(){
         $connection = $this->get_connection();
-        $this->result = $connection->create_kit($this->description, $this->data);
+        $this->result = $connection->create_kit($this->description, $this->data, $this->time);
         if(is_error($this->result))
             $this->json_error("Errore nel creare il kit");
     }

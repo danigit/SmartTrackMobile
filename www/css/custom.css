@@ -137,6 +137,10 @@ thead tr{
     margin: 50px auto auto!important;
 }
 
+#lonely-objects-page{
+    min-height: auto!important;
+}
+
 .kit-objects li {
     margin-bottom: 10px!important;
 }

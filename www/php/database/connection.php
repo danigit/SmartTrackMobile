@@ -137,7 +137,7 @@ class connection{
      * @param $data - gli altri campi del kit
      * @return mixed - l'id del kit inserito oppure un errore
      */
-    function create_kit($description, $data){
+    function create_kit($description, $data, $time){
 
         $this->connection->autocommit(false);
         $errors = array();
@@ -168,6 +168,13 @@ class connection{
 
             if ($resultHistoryInsert == false)
                 array_push($errors, 'insertHistory');
+
+            $query = "UPDATE tracking SET KIT_ID = ? WHERE COD_OBJ = ? AND (NOW() - TIMESTAMP) / 60 < ?";
+
+            $resultUpdateTracking = $this->parse_and_execute_select($query, "iii", $id, $datum, $time);
+
+            if ($resultUpdateTracking == false)
+                array_push($errors, 'updateTracking');
         }
 
         if(!empty($errors)){
